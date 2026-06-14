@@ -8,9 +8,9 @@ namespace Bignum.Core.Bignum;
 /// </summary>
 public class Bignum
 {
-    public bool IsNegative { get; set; }
-    public BignumNode? Head { get; set; }
-    public BignumNode? Tail { get; set; }
+    public bool IsNegative { get; private set; }
+    public BignumNode? Head { get; private set; }
+    public BignumNode? Tail { get; private set; }
     public int NodeCount { get; private set; }
 
     public Bignum(bool isNegative)
