@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Buffers;
+using DynamicData;
 
 namespace Bignum.Core.Bignum;
 
@@ -16,8 +17,8 @@ public static class BignumHelper
     /// <returns></returns>
     public static NodeChain AddRaw(NodeChain x, NodeChain y)
     {
-        if (x.Head is null) return y with { Head = CloneList(x.Head) };
-        if (y.Head is null) return x with { Head = CloneList(y.Head) };
+        if (x.Head is null) return y with { Head = CloneList(y.Head) };
+        if (y.Head is null) return x with { Head = CloneList(x.Head) };
 
         var currentX = x.Head;
         var currentY = y.Head;
@@ -102,6 +103,38 @@ public static class BignumHelper
     }
 
     /// <summary>
+    /// |X| * (int) y
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static NodeChain MultiplyDigit(NodeChain x, int y)
+    {
+        if (x.IsEmpty || y == 0) return new NodeChain(null, 0);
+        if (y == 1) return new NodeChain(CloneList(x.Head), x.NodeCount);
+
+        var dummy = new BignumNode(0);
+        var current = dummy;
+        var currentX = x.Head;
+        var resultCount = 0;
+        var carry = 0;
+
+        while (currentX is not null || carry > 0)
+        {
+            var sum = (long)(currentX?.Value ?? 0) * y + carry;
+            var node = new BignumNode((int)(sum % BignumConstants.NodeBase));
+            current.Next = node;
+            current = current.Next;
+            carry = (int)(sum / BignumConstants.NodeBase);
+            resultCount++;
+
+            currentX = currentX?.Next;
+        }
+
+        return CleanTail(new NodeChain(dummy.Next, resultCount));
+    }
+
+    /// <summary>
     /// |X| * |Y|
     /// </summary>
     /// <param name="x"></param>
@@ -132,7 +165,7 @@ public static class BignumHelper
                 {
                     var product = (long)currentX.Value * currentY.Value;
                     var productIndex = xIndex + yIndex;
-                 
+
                     var currentSum = buffer[productIndex] + product;
                     buffer[productIndex] = (int)(currentSum % BignumConstants.NodeBase);
                     var carry = currentSum / BignumConstants.NodeBase;
@@ -140,13 +173,13 @@ public static class BignumHelper
                     productIndex++;
                     while (carry > 0)
                     {
-                        currentSum =  buffer[productIndex] + carry;
+                        currentSum = buffer[productIndex] + carry;
                         buffer[productIndex] = (int)(currentSum % BignumConstants.NodeBase);
                         carry = currentSum / BignumConstants.NodeBase;
-                        
+
                         productIndex++;
                     }
-                    
+
                     yIndex++;
                     currentY = currentY.Next;
                 }
@@ -156,12 +189,13 @@ public static class BignumHelper
             }
 
 
+            var current = dummy;
             var resCount = 0;
             for (var i = 0; i < requiredLength; i++)
             {
                 resCount++;
-                dummy.Next = new BignumNode(buffer[i]);
-                dummy = dummy.Next;
+                current.Next = new BignumNode(buffer[i]);
+                current = current.Next;
             }
 
             var rawResult = new NodeChain(dummy.Next, resCount);
@@ -174,9 +208,93 @@ public static class BignumHelper
         }
     }
 
+    /// <summary>
+    /// |dividend| / |divisor| = (Quotient, Remainder) (|B| != 0)
+    /// </summary>
+    /// <param name="dividend"></param>
+    /// <param name="divisor"></param>
+    /// <returns></returns>
+    /// <exception cref="DivideByZeroException"></exception>
+    /// <exception cref="NotImplementedException"></exception>
     public static (NodeChain Quotient, NodeChain Remainder) DivideRaw(NodeChain dividend, NodeChain divisor)
     {
-        throw new NotImplementedException();
+        if (divisor.IsEmpty) throw new DivideByZeroException("Divisor cannot be zero.");
+
+        var compareResult = CompareRaw(dividend, divisor);
+        switch (compareResult)
+        {
+            case < 0:
+                return (
+                    new NodeChain(null, 0),
+                    dividend with { Head = CloneList(dividend.Head) });
+            case 0:
+                return (
+                    new NodeChain(new BignumNode(1), 1),
+                    new NodeChain(null, 0));
+        }
+        
+        var dividendNodes = new int[dividend.NodeCount];
+        var temp = dividend.Head;
+        for (var i = 0; i < dividend.NodeCount; i++)
+        {
+            dividendNodes[dividend.NodeCount - 1 - i] = temp!.Value;
+            temp = temp.Next;
+        }
+
+        var quotientNodes = new int[dividend.NodeCount];
+        var remainder = new NodeChain(null, 0);
+
+        for (var i = 0; i < dividend.NodeCount; i++)
+        {
+            var newHead = new BignumNode(dividendNodes[i], remainder.Head);
+            remainder = new NodeChain(newHead, remainder.NodeCount + 1);
+            remainder = CleanTail(remainder);
+            
+            // A = B * q + r => có B,r. Tìm q sao cho biểu thức gần A nhất có thể 
+            var q = FindQuotientDigit(divisor, remainder);
+            
+            // vì gần nhất có thể, nên A >= A_founded, phải trừ lại để làm remainder mới 
+            var sub = MultiplyDigit(divisor, q);
+            remainder = SubtractRaw(remainder, sub);
+            
+            quotientNodes[i] = q;
+        }
+
+        var dummy = new BignumNode(0);
+        var current = dummy;
+        for (var i = dividend.NodeCount - 1; i >= 0; i--)
+        {
+            var node = new BignumNode(quotientNodes[i]);
+            current.Next = node;
+            current = node;
+        }
+        
+        var quotient = new NodeChain(dummy.Next, dividend.NodeCount);
+        quotient = CleanTail(quotient);
+        
+        return (quotient, remainder);
+        
+        static int FindQuotientDigit(NodeChain div, NodeChain rem)
+        {
+            var low = 0;
+            var high = BignumConstants.NodeMaxValue;
+            var q = 0;
+            while (low <= high)
+            {
+                var mid = low + (high - low) / 2;
+                var product = MultiplyDigit(div, mid);
+                if (CompareRaw(product, rem) <= 0)
+                {
+                    q = mid;
+                    low = mid + 1;
+                }
+                else
+                {
+                    high = mid - 1;
+                }
+            }
+            return q;
+        }
     }
 
     /// <summary>
@@ -226,14 +344,14 @@ public static class BignumHelper
         int[]? rentedX = null;
         int[]? rentedY = null;
 
-        Span<int> bufferX = count <= 256 ? stackalloc int[count] : (rentedX = ArrayPool<int>.Shared.Rent(count));
-        Span<int> bufferY = count <= 256 ? stackalloc int[count] : (rentedY = ArrayPool<int>.Shared.Rent(count));
+        var bufferX = count <= 256 ? stackalloc int[count] : (rentedX = ArrayPool<int>.Shared.Rent(count));
+        var bufferY = count <= 256 ? stackalloc int[count] : (rentedY = ArrayPool<int>.Shared.Rent(count));
 
         try
         {
             var currentX = x.Head;
             var currentY = y.Head;
-            int idx = 0;
+            var idx = 0;
 
             while (currentX is not null && currentY is not null)
             {

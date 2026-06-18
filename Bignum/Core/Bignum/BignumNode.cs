@@ -14,7 +14,7 @@ public class BignumNode
         Value = value;
     }
 
-    public BignumNode(int value, BignumNode next) : this(value)
+    public BignumNode(int value, BignumNode? next) : this(value)
     {
         Next = next;
     }

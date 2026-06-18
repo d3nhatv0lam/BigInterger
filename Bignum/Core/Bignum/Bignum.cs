@@ -12,29 +12,28 @@ public class Bignum
     public BignumNode? Head { get; private set; }
     public BignumNode? Tail { get; private set; }
     public int NodeCount { get; private set; }
-
-    public Bignum(bool isNegative)
-    {
-        IsNegative = isNegative;
-
-        NodeCount = GetNodeCount();
-    }
-
+    
     public Bignum(int value)
     {
         IsNegative = value < 0;
+        Head = new BignumNode(value);
+        NodeCount = 1;
+        InitTail();
     }
 
     public Bignum(long value)
     {
         IsNegative = value < 0;
         
+        throw new NotImplementedException();
     }
 
     public Bignum(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(value.Length, BignumConstants.MaxDigitOfBignum);
+        
+        throw new NotImplementedException();
     }
 
     private Bignum(bool isNegative, BignumNode? head, int nodeCount)
@@ -44,6 +43,8 @@ public class Bignum
         NodeCount = nodeCount;
         InitTail();
     }
+    
+    private Bignum(bool isNegative, NodeChain chain) : this(isNegative, chain.Head, chain.NodeCount) {}
 
     public static Bignum operator +(Bignum x, Bignum y)
     {
@@ -57,19 +58,19 @@ public class Bignum
         if (x.IsNegative == y.IsNegative)
         {
             resultChain = BignumHelper.AddRaw(xChain, yChain);
-            return new Bignum(x.IsNegative, resultChain.Head, resultChain.NodeCount);
+            return new Bignum(x.IsNegative, resultChain);
         }
 
         // khác dấu
         if (BignumHelper.CompareRaw(xChain, yChain) >= 0)
         {
             resultChain = BignumHelper.SubtractRaw(xChain, yChain);
-            return new Bignum(x.IsNegative, resultChain.Head, resultChain.NodeCount);
+            return new Bignum(x.IsNegative, resultChain);
         }
         else
         {
             resultChain = BignumHelper.SubtractRaw(yChain, xChain);
-            return new Bignum(y.IsNegative, resultChain.Head, resultChain.NodeCount);
+            return new Bignum(y.IsNegative, resultChain);
         }
     }
 
