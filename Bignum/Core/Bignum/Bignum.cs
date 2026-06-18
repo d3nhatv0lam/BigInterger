@@ -12,27 +12,46 @@ public class Bignum
     public BignumNode? Head { get; private set; }
     public BignumNode? Tail { get; private set; }
     public int NodeCount { get; private set; }
-    
-    public Bignum(int value)
+
+    public Bignum(int value) : this((long)value)
     {
-        IsNegative = value < 0;
-        Head = new BignumNode(value);
-        NodeCount = 1;
-        InitTail();
     }
 
     public Bignum(long value)
     {
         IsNegative = value < 0;
-        
-        throw new NotImplementedException();
+        var absVal = Math.Abs(value);
+        if (absVal == 0)
+        {
+            IsNegative = false;
+            Head = null;
+            Tail = null;
+            NodeCount = 0;
+            return;
+        }
+
+        var dummy = new BignumNode(0);
+        var current = dummy;
+        var count = 0;
+        while (absVal > 0)
+        {
+            var nodeVal = (int)(absVal % BignumConstants.NodeBase);
+            current.Next = new BignumNode(nodeVal);
+            current = current.Next;
+            count++;
+            absVal /= BignumConstants.NodeBase;
+        }
+
+        Head = dummy.Next;
+        NodeCount = count;
+        InitTail();
     }
 
     public Bignum(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(value.Length, BignumConstants.MaxDigitOfBignum);
-        
+
         throw new NotImplementedException();
     }
 
@@ -43,8 +62,11 @@ public class Bignum
         NodeCount = nodeCount;
         InitTail();
     }
-    
-    private Bignum(bool isNegative, NodeChain chain) : this(isNegative, chain.Head, chain.NodeCount) {}
+
+    private Bignum(bool isNegative, NodeChain chain)
+        : this(isNegative, chain.Head, chain.NodeCount)
+    {
+    }
 
     public static Bignum operator +(Bignum x, Bignum y)
     {
@@ -58,20 +80,30 @@ public class Bignum
         if (x.IsNegative == y.IsNegative)
         {
             resultChain = BignumHelper.AddRaw(xChain, yChain);
-            return new Bignum(x.IsNegative, resultChain);
+            var isNeg = !resultChain.IsEmpty && x.IsNegative;
+            return new Bignum(isNeg, resultChain);
         }
 
         // khác dấu
         if (BignumHelper.CompareRaw(xChain, yChain) >= 0)
         {
             resultChain = BignumHelper.SubtractRaw(xChain, yChain);
-            return new Bignum(x.IsNegative, resultChain);
+            var isNeg = !resultChain.IsEmpty && x.IsNegative;
+            return new Bignum(isNeg, resultChain);
         }
         else
         {
             resultChain = BignumHelper.SubtractRaw(yChain, xChain);
-            return new Bignum(y.IsNegative, resultChain);
+            var isNeg = !resultChain.IsEmpty && y.IsNegative;
+            return new Bignum(isNeg, resultChain);
         }
+    }
+
+    public static Bignum operator -(Bignum x)
+    {
+        ArgumentNullException.ThrowIfNull(x);
+        if (x.Head is null) return x;
+        return new Bignum(!x.IsNegative, x.Head, x.NodeCount);
     }
 
     public static Bignum operator -(Bignum x, Bignum y)
@@ -79,8 +111,7 @@ public class Bignum
         ArgumentNullException.ThrowIfNull(x);
         ArgumentNullException.ThrowIfNull(y);
 
-
-        throw new NotImplementedException();
+        return x + -y;
     }
 
     public static Bignum operator *(Bignum x, Bignum y)
@@ -88,8 +119,14 @@ public class Bignum
         ArgumentNullException.ThrowIfNull(x);
         ArgumentNullException.ThrowIfNull(y);
 
+        var xChain = new NodeChain(x.Head, x.NodeCount);
+        var yChain = new NodeChain(y.Head, y.NodeCount);
 
-        throw new NotImplementedException();
+        var resultChain = BignumHelper.MultiplyRaw(xChain, yChain);
+
+        var isNegative = x.IsNegative ^ y.IsNegative;
+        if (resultChain.IsEmpty) isNegative = false;
+        return new Bignum(isNegative, resultChain.Head, resultChain.NodeCount);
     }
 
     public static Bignum operator /(Bignum x, Bignum y)
@@ -113,15 +150,26 @@ public class Bignum
         ArgumentNullException.ThrowIfNull(x);
         ArgumentNullException.ThrowIfNull(y);
 
+        var xChain = new NodeChain(x.Head, x.NodeCount);
+        var yChain = new NodeChain(y.Head, y.NodeCount);
+        var (quotChain, remChain) = BignumHelper.DivideRaw(xChain, yChain);
 
-        throw new NotImplementedException();
+        var isQuotNegative = x.IsNegative ^ y.IsNegative;
+        if (quotChain.IsEmpty) isQuotNegative = false;
+        var isRemNegative = x.IsNegative;
+        if (remChain.IsEmpty) isRemNegative = false;
+
+        return (
+            new Bignum(isQuotNegative, quotChain.Head, quotChain.NodeCount),
+            new Bignum(isRemNegative, remChain.Head, remChain.NodeCount)
+        );
     }
 
     public override string ToString()
     {
         if (Head is null) return "0";
 
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         var current = Head;
 
         while (current is not null)

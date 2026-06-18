@@ -6,6 +6,7 @@ namespace Bignum.Core.Bignum;
 
 public readonly record struct NodeChain(BignumNode? Head, int NodeCount)
 {
+    public static readonly NodeChain Empty = new(null, 0);
     public bool IsEmpty => Head is null || NodeCount == 0;
 }
 
@@ -17,8 +18,8 @@ public static class BignumHelper
     /// <returns></returns>
     public static NodeChain AddRaw(NodeChain x, NodeChain y)
     {
-        if (x.Head is null) return y with { Head = CloneList(y.Head) };
-        if (y.Head is null) return x with { Head = CloneList(x.Head) };
+        if (x.Head is null) return y;
+        if (y.Head is null) return x;
 
         var currentX = x.Head;
         var currentY = y.Head;
@@ -63,7 +64,7 @@ public static class BignumHelper
             case < 0:
                 throw new InvalidOperationException("Minuend must be greater than or equal to subtrahend.");
             case 0:
-                return new NodeChain(null, 0);
+                return NodeChain.Empty;
         }
 
         var dummy = new BignumNode(0);
@@ -110,8 +111,8 @@ public static class BignumHelper
     /// <returns></returns>
     public static NodeChain MultiplyDigit(NodeChain x, int y)
     {
-        if (x.IsEmpty || y == 0) return new NodeChain(null, 0);
-        if (y == 1) return new NodeChain(CloneList(x.Head), x.NodeCount);
+        if (x.IsEmpty || y == 0) return NodeChain.Empty;
+        if (y == 1) return x;
 
         var dummy = new BignumNode(0);
         var current = dummy;
@@ -143,7 +144,7 @@ public static class BignumHelper
     /// <exception cref="NotImplementedException"></exception>
     public static NodeChain MultiplyRaw(NodeChain x, NodeChain y)
     {
-        if (x.IsEmpty || y.IsEmpty) return new NodeChain(null, 0);
+        if (x.IsEmpty || y.IsEmpty) return NodeChain.Empty;
 
         var dummy = new BignumNode(0);
 
@@ -224,13 +225,11 @@ public static class BignumHelper
         switch (compareResult)
         {
             case < 0:
-                return (
-                    new NodeChain(null, 0),
-                    dividend with { Head = CloneList(dividend.Head) });
+                return (NodeChain.Empty, dividend);
             case 0:
                 return (
                     new NodeChain(new BignumNode(1), 1),
-                    new NodeChain(null, 0));
+                    NodeChain.Empty);
         }
         
         var dividendNodes = new int[dividend.NodeCount];
@@ -242,7 +241,7 @@ public static class BignumHelper
         }
 
         var quotientNodes = new int[dividend.NodeCount];
-        var remainder = new NodeChain(null, 0);
+        var remainder = NodeChain.Empty;
 
         for (var i = 0; i < dividend.NodeCount; i++)
         {
@@ -324,7 +323,7 @@ public static class BignumHelper
             current = current.Next;
         }
 
-        if (lastNonZeroNode is null) return new NodeChain(null, 0);
+        if (lastNonZeroNode is null) return NodeChain.Empty;
 
         lastNonZeroNode.Next = null;
 
@@ -379,21 +378,4 @@ public static class BignumHelper
         }
     }
 
-    private static BignumNode? CloneList(BignumNode? head)
-    {
-        if (head is null) return null;
-
-        BignumNode dummy = new BignumNode(0);
-        BignumNode current = dummy;
-        BignumNode? walker = head;
-
-        while (walker is not null)
-        {
-            current.Next = new BignumNode(walker.Value);
-            current = current.Next;
-            walker = walker.Next;
-        }
-
-        return dummy.Next;
-    }
 }
