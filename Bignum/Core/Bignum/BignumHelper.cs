@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using DynamicData;
 
 namespace Bignum.Core.Bignum;
 
@@ -66,8 +65,8 @@ public static class BignumHelper
                 return new NodeChain(null, 0);
         }
 
-        BignumNode dummy = new BignumNode(0);
-        BignumNode current = dummy;
+        var dummy = new BignumNode(0);
+        var current = dummy;
         var currentMinuend = minuend.Head;
         var currentSubtrahend = subtrahend.Head;
         var resultCount = 0;
@@ -75,7 +74,7 @@ public static class BignumHelper
 
         while (currentMinuend is not null)
         {
-            var minuendValue = currentMinuend?.Value ?? 0;
+            var minuendValue = currentMinuend.Value;
             var subtrahendValue = currentSubtrahend?.Value ?? 0;
 
             var difference = minuendValue - subtrahendValue - carry;
@@ -93,7 +92,7 @@ public static class BignumHelper
 
             resultCount++;
 
-            currentMinuend = currentMinuend?.Next;
+            currentMinuend = currentMinuend.Next;
             currentSubtrahend = currentSubtrahend?.Next;
         }
 
@@ -102,9 +101,77 @@ public static class BignumHelper
         return CleanTail(rawResult);
     }
 
+    /// <summary>
+    /// |X| * |Y|
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
     public static NodeChain MultiplyRaw(NodeChain x, NodeChain y)
     {
-        throw new NotImplementedException();
+        if (x.IsEmpty || y.IsEmpty) return new NodeChain(null, 0);
+
+        var dummy = new BignumNode(0);
+
+        var requiredLength = x.NodeCount + y.NodeCount;
+        var rentedResult = ArrayPool<int>.Shared.Rent(requiredLength);
+        Array.Clear(rentedResult);
+        var buffer = rentedResult.AsSpan(0, requiredLength);
+
+        try
+        {
+            var xIndex = 0;
+            var currentX = x.Head;
+
+            while (currentX is not null)
+            {
+                var yIndex = 0;
+                var currentY = y.Head;
+                while (currentY is not null)
+                {
+                    var product = (long)currentX.Value * currentY.Value;
+                    var productIndex = xIndex + yIndex;
+                 
+                    var currentSum = buffer[productIndex] + product;
+                    buffer[productIndex] = (int)(currentSum % BignumConstants.NodeBase);
+                    var carry = currentSum / BignumConstants.NodeBase;
+
+                    productIndex++;
+                    while (carry > 0)
+                    {
+                        currentSum =  buffer[productIndex] + carry;
+                        buffer[productIndex] = (int)(currentSum % BignumConstants.NodeBase);
+                        carry = currentSum / BignumConstants.NodeBase;
+                        
+                        productIndex++;
+                    }
+                    
+                    yIndex++;
+                    currentY = currentY.Next;
+                }
+
+                xIndex++;
+                currentX = currentX.Next;
+            }
+
+
+            var resCount = 0;
+            for (var i = 0; i < requiredLength; i++)
+            {
+                resCount++;
+                dummy.Next = new BignumNode(buffer[i]);
+                dummy = dummy.Next;
+            }
+
+            var rawResult = new NodeChain(dummy.Next, resCount);
+
+            return CleanTail(rawResult);
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(rentedResult);
+        }
     }
 
     public static (NodeChain Quotient, NodeChain Remainder) DivideRaw(NodeChain dividend, NodeChain divisor)

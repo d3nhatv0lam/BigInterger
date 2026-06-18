@@ -3,7 +3,6 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-  
   <ItemGroup>
     <!-- Avalonia packages -->
     <!-- Important: keep version in sync! -->
@@ -17,6 +16,7 @@
     <PackageVersion Include="Avalonia.Android" Version="12.0.4" />
     <PackageVersion Include="Microsoft.DotNet.HotReload.WebAssembly.Browser" Version="10.0.204" />
     <PackageVersion Include="ReactiveUI.Avalonia" Version="12.0.3" />
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="3.1.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.2" />
   </ItemGroup>
 </Project>

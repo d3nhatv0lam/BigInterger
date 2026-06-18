@@ -6,6 +6,10 @@ public static class BignumConstants
 {
     // value : 0 ~ 9999
     public const int NodeDigitCount = 4;
+    /// <summary>
+    /// Số chữ số tối đa cho phép tạo thành bignum
+    /// </summary>
+    public const int MaxDigitOfBignum = 10000;
 
     public static readonly int NodeBase = NodeDigitCount switch
     {
