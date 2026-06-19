@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Bignum.Browser/Bignum.Browser.csproj" />
   <Project Path="Bignum.Desktop/Bignum.Desktop.csproj" />
+  <Project Path="Bignum.Tests/Bignum.Tests.csproj" />
   <Project Path="Bignum/Bignum.csproj" />
 </Solution>
