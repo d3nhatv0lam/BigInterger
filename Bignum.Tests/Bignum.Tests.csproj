@@ -24,4 +24,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Bignum\Bignum.csproj" />
+    </ItemGroup>
+
 </Project>
