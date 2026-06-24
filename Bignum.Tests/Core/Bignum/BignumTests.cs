@@ -64,7 +64,7 @@ public class BignumTests
 
         Assert.Equal(b1.IsNegative, b2.IsNegative);
         Assert.Equal(b1.NodeCount, b2.NodeCount);
-        Assert.Equal(b1.ToString(), b2.ToString());
+        Assert.Equal(b1.ToStringNumber(), b2.ToStringNumber());
     }
 
     #endregion
@@ -84,7 +84,7 @@ public class BignumTests
     public void ToString_ShouldReturnCorrectString(string input, string expected)
     {
         var b = new BignumClass(input);
-        Assert.Equal(expected, b.ToString());
+        Assert.Equal(expected, b.ToStringNumber());
     }
 
     #endregion
@@ -137,7 +137,7 @@ public class BignumTests
             _ => throw new InvalidOperationException()
         };
 
-        Assert.Equal(expectedStr, result.ToString());
+        Assert.Equal(expectedStr, result.ToStringNumber());
     }
 
     [Fact]
@@ -145,11 +145,11 @@ public class BignumTests
     {
         var positive = new BignumClass("12345678");
         var negative = -positive;
-        Assert.Equal("-12345678", negative.ToString());
+        Assert.Equal("-12345678", negative.ToStringNumber());
 
         var zero = new BignumClass("0");
         var negatedZero = -zero;
-        Assert.Equal("0", negatedZero.ToString());
+        Assert.Equal("0", negatedZero.ToStringNumber());
     }
 
     #endregion

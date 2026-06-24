@@ -11,6 +11,7 @@
                      x:Class="Bignum.Views.MainWindow"
                      Icon="/Assets/avalonia-logo.ico"
                      x:DataType="vm:MainViewModel"
+                     Focusable="True"
                      Title="Bignum">
     <views:MainView />
 </rxui:ReactiveWindow>

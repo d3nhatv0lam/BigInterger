@@ -234,7 +234,7 @@ public class Bignum
         );
     }
 
-    public override string ToString()
+    public string ToStringNumber()
     {
         if (Head is null) return "0";
 

@@ -3,13 +3,105 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
                           xmlns:vm="clr-namespace:Bignum.ViewModels"
                           xmlns:rxui="http://reactiveui.net"
+                          xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+                          xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                           x:DataType="vm:CalculatorViewModel"
                           x:CompileBindings="True"
+                          Focusable="True"
                           x:Class="Bignum.Views.CalculatorView">
-    <Border>
-        <TextBlock Text="CALCULATORRRRRRRRR" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+
+    <rxui:ReactiveUserControl.Styles>
+        <Style Selector=".input-field">
+            <Style Selector="^ Label">
+                <Setter Property="FontWeight" Value="Bold"></Setter>
+                <Setter Property="FontSize" Value="16"></Setter>
+            </Style>
+        </Style>
+    </rxui:ReactiveUserControl.Styles>
+
+    <Border Padding="16">
+        <Grid RowDefinitions="auto auto auto auto auto" RowSpacing="20">
+            <!-- // số A // -->
+            <StackPanel Grid.Row="0" Classes="input-field">
+                
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Label Target="NumberA">Số A</Label>
+                    <!-- <Border Width="2" Background="Gray"></Border> -->
+                    <!-- <TextBlock VerticalAlignment="Center"> -->
+                    <!--     <Run Text="Số ký tự: "></Run> -->
+                    <!--     <Run Text="{Binding ElementName=NumberA, Path=Text.Length, Mode=OneWay}"></Run> -->
+                    <!-- </TextBlock> -->
+                </StackPanel>
+                
+                <TextBox x:Name="NumberA" UseFloatingPlaceholder="False"
+                         MaxLength="{Binding InputMaxLength}"
+                         Classes="outline"
+                         Theme="{StaticResource OutlineTextBox}"
+                         Text="{Binding NumberA, Mode=TwoWay}"
+                         PlaceholderText="Nhập số A" />
+            </StackPanel>
+
+            <!-- // Số B // -->
+            <StackPanel Grid.Row="1" Classes="input-field">
+                <Label Target="NumberB">Số B</Label>
+                <TextBox x:Name="NumberB" UseFloatingPlaceholder="False"
+                         MaxLength="{Binding InputMaxLength}"
+                         Classes="outline"
+                         Theme="{StaticResource OutlineTextBox}"
+                         Text="{Binding NumberB, Mode=TwoWay}"
+                         PlaceholderText="Nhập số B" />
+            </StackPanel>
+
+            <!-- // phép toán  -->
+            <Border BorderThickness="1" BorderBrush="Black" Grid.Row="2" CornerRadius="10">
+                <Border Padding="10">
+                    <Grid ColumnDefinitions="auto * auto" ColumnSpacing="10">
+                        <TextBlock Grid.Column="0"
+                                   Text="Phép toán"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   FontWeight="Bold">
+                        </TextBlock>
+                        
+                        <controls:Card Grid.Column="1" Padding="0" InsideClipping="True">
+                          
+                        </controls:Card>
+
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding ClearResultCommand}"
+                            Content="Xóa kết quả">
+                        </Button>
+                    </Grid>
+                </Border>
+            </Border>
+            
+            
+            <!-- // Kết quả // -->
+            <StackPanel Grid.Row="3" Classes="input-field">
+                <Label Target="Result">Kết quả</Label>
+                <TextBox x:Name="Result" UseFloatingPlaceholder="False"
+                         IsReadOnly="True"
+                         Classes="outline"
+                         Theme="{StaticResource OutlineTextBox}"
+                         Text="{Binding ResultString, Mode=OneWay}"
+                         PlaceholderText="0" />
+            </StackPanel>
+            
+            <!-- // Số dư // -->
+            <StackPanel Grid.Row="4" Classes="input-field">
+                <Label Target="Remainder">Số dư</Label>
+                <TextBox x:Name="Remainder" UseFloatingPlaceholder="False"
+                         Classes="outline"
+                         IsReadOnly="True"
+                         Theme="{StaticResource OutlineTextBox}"
+                         Text="{Binding RemainderString, Mode=OneWay}"
+                         PlaceholderText="0" />
+            </StackPanel>
+
+        </Grid>
     </Border>
 </rxui:ReactiveUserControl>
