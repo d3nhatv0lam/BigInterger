@@ -1,0 +1,47 @@
+name: Deploy Avalonia Web to Pages
+
+on:
+  push:
+    branches: [ "main" ]
+
+# Thiết lập quyền cho GITHUB_TOKEN để có thể deploy lên GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Chỉ cho phép một lượt deploy chạy tại một thời điểm
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x' # Thay đổi phiên bản .NET phù hợp với dự án của bạn
+
+      - name: Install Avalonia Workloads
+        run: dotnet workload install wasm-tools
+
+      - name: Publish Avalonia Browser
+        run: dotnet publish Bignum.Browser/Bignum.Browser.csproj -c Release -o release_output
+
+      - name: Disable Jekyll processing
+        run: touch release_output/wwwroot/.nojekyll
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'release_output/wwwroot'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
