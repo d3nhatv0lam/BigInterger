@@ -3,9 +3,9 @@ using ReactiveUI.Avalonia;
 
 namespace Bignum.Views;
 
-public partial class MainWindow : ReactiveWindow<MainViewModel>
+public partial class HistoryView : ReactiveUserControl<HistoryViewModel>
 {
-    public MainWindow()
+    public HistoryView()
     {
         InitializeComponent();
     }
