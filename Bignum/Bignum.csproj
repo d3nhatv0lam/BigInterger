@@ -26,5 +26,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ReactiveUI.Validation" />
+        <PackageReference Include="Xaml.Behaviors.Interactions" />
+        <PackageReference Include="Xaml.Behaviors.Interactions.Responsive" />
     </ItemGroup>
 </Project>
