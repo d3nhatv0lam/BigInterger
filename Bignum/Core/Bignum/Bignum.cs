@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -46,6 +46,48 @@ public class Bignum
         Head = dummy.Next;
         NodeCount = count;
         InitTail();
+    }
+
+    public static bool IsValid(string? value, out string? errorMessage)
+    {
+        errorMessage = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errorMessage = "Trường này không được để trống";
+            return false;
+        }
+
+        var trimmed = value.Trim();
+        var startIndex = 0;
+
+        if (trimmed[0] == '-' || trimmed[0] == '+')
+        {
+            startIndex = 1;
+        }
+
+        if (startIndex >= trimmed.Length)
+        {
+            errorMessage = "Định dạng số không hợp lệ";
+            return false;
+        }
+
+        var digitCount = trimmed.Length - startIndex;
+        if (digitCount > BignumConstants.MaxDigitOfBignum)
+        {
+            errorMessage = $"Số chữ số vượt quá giới hạn tối đa ({BignumConstants.MaxDigitOfBignum})";
+            return false;
+        }
+
+        for (var i = startIndex; i < trimmed.Length; i++)
+        {
+            if (!char.IsDigit(trimmed[i]))
+            {
+                errorMessage = "Số chỉ được chứa các ký tự số (0-9)";
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public Bignum(string value)

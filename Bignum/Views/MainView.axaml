@@ -8,6 +8,8 @@
     xmlns:vm="using:Bignum.ViewModels"
     xmlns:view="clr-namespace:Bignum.Views"
     x:CompileBindings="True"
+    Focusable="True"
+    Background="Transparent"
     xmlns:rxui="http://reactiveui.net"
     x:Class="Bignum.Views.MainView"
     x:DataType="vm:MainViewModel">

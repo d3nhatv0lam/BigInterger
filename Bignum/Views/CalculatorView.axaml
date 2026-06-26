@@ -22,19 +22,19 @@
         </Style>
     </rxui:ReactiveUserControl.Styles>
 
-    <Border Padding="16">
+    <Border Padding="16" Background="Transparent" PointerPressed="Background_OnPointerPressed">
         <Grid RowDefinitions="auto auto auto auto auto" RowSpacing="20">
             <!-- // số A // -->
             <StackPanel Grid.Row="0" Classes="input-field">
-                
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Label Target="NumberA">Số A</Label>
-                    <!-- <Border Width="2" Background="Gray"></Border> -->
-                    <!-- <TextBlock VerticalAlignment="Center"> -->
-                    <!--     <Run Text="Số ký tự: "></Run> -->
-                    <!--     <Run Text="{Binding ElementName=NumberA, Path=Text.Length, Mode=OneWay}"></Run> -->
-                    <!-- </TextBlock> -->
-                </StackPanel>
+                <Grid ColumnDefinitions="* Auto" Margin="0,0,0,4">
+                    <Label Grid.Column="0" Target="NumberA" FontWeight="Bold" FontSize="16" VerticalAlignment="Center">Số A</Label>
+                    <Button Grid.Column="1"
+                            IsTabStop="False"
+                            Command="{Binding ClearNumberACommand}"
+                            Classes="flat" Padding="4" Background="Transparent" BorderThickness="0" Width="32" Height="32">
+                        <avalonia:MaterialIcon Kind="Close" Width="18" Height="18" Foreground="Black" />
+                    </Button>
+                </Grid>
                 
                 <TextBox x:Name="NumberA" UseFloatingPlaceholder="False"
                          MaxLength="{Binding InputMaxLength}"
@@ -42,21 +42,42 @@
                          Theme="{StaticResource OutlineTextBox}"
                          Text="{Binding NumberA, Mode=TwoWay}"
                          PlaceholderText="Nhập số A" />
+                
+                <TextBlock x:Name="NumberAErrorText"
+                           Foreground="#D32F2F"
+                           FontSize="12"
+                           Margin="4,4,0,0"
+                           IsVisible="{Binding ElementName=NumberAErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
 
             <!-- // Số B // -->
             <StackPanel Grid.Row="1" Classes="input-field">
-                <Label Target="NumberB">Số B</Label>
+                <Grid ColumnDefinitions="* Auto" Margin="0,0,0,4">
+                    <Label Grid.Column="0" Target="NumberB" FontWeight="Bold" FontSize="16" VerticalAlignment="Center">Số B</Label>
+                    <Button Grid.Column="1"
+                            IsTabStop="False"
+                            Command="{Binding ClearNumberBCommand}"
+                            Classes="flat" Padding="4" Background="Transparent" BorderThickness="0" Width="32" Height="32">
+                        <avalonia:MaterialIcon Kind="Close" Width="18" Height="18" Foreground="Black" />
+                    </Button>
+                </Grid>
+                
                 <TextBox x:Name="NumberB" UseFloatingPlaceholder="False"
                          MaxLength="{Binding InputMaxLength}"
                          Classes="outline"
                          Theme="{StaticResource OutlineTextBox}"
                          Text="{Binding NumberB, Mode=TwoWay}"
                          PlaceholderText="Nhập số B" />
+                
+                <TextBlock x:Name="NumberBErrorText"
+                           Foreground="#D32F2F"
+                           FontSize="12"
+                           Margin="4,4,0,0"
+                           IsVisible="{Binding ElementName=NumberBErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
 
             <!-- // phép toán  -->
-            <Border BorderThickness="1" BorderBrush="Black" Grid.Row="2" CornerRadius="10">
+            <Border BorderThickness="1" BorderBrush="#EAE2F0" Grid.Row="2" CornerRadius="10">
                 <Border Padding="10">
                     <Grid ColumnDefinitions="auto * auto" ColumnSpacing="10">
                         <TextBlock Grid.Column="0"
@@ -66,19 +87,57 @@
                                    FontWeight="Bold">
                         </TextBlock>
                         
-                        <controls:Card Grid.Column="1" Padding="0" InsideClipping="True">
-                          
-                        </controls:Card>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="10,0">
+                            <StackPanel.Styles>
+                                <Style Selector="Button.op-btn">
+                                    <Setter Property="CornerRadius" Value="16" />
+                                    <Setter Property="Padding" Value="14 6" />
+                                    <Setter Property="Margin" Value="0" />
+                                    <Setter Property="FontSize" Value="13" />
+                                    <Setter Property="Background" Value="#EAE2F0" />
+                                    <Setter Property="Foreground" Value="#4C4452" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Style>
+                                <Style Selector="Button.op-btn[Tag=True]">
+                                    <Setter Property="Background" Value="#4C4452" />
+                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                </Style>
+                            </StackPanel.Styles>
+                            
+                            <Button Classes="op-btn" Content="Phép cộng (+)"
+                                    Command="{Binding SelectOperationCommand}"
+                                    CommandParameter="{x:Static vm:OperationType.Add}"
+                                    Tag="{Binding IsAddActive}" />
+                            
+                            <Button Classes="op-btn" Content="Phép trừ (-)"
+                                    Command="{Binding SelectOperationCommand}"
+                                    CommandParameter="{x:Static vm:OperationType.Subtract}"
+                                    Tag="{Binding IsSubtractActive}" />
+                            
+                            <Button Classes="op-btn" Content="Phép nhân (x)"
+                                    Command="{Binding SelectOperationCommand}"
+                                    CommandParameter="{x:Static vm:OperationType.Multiply}"
+                                    Tag="{Binding IsMultiplyActive}" />
+                            
+                            <Button Classes="op-btn" Content="Phép chia (/)"
+                                    Command="{Binding SelectOperationCommand}"
+                                    CommandParameter="{x:Static vm:OperationType.Divide}"
+                                    Tag="{Binding IsDivideActive}" />
+                        </StackPanel>
 
                         <Button
                             Grid.Column="2"
                             Command="{Binding ClearResultCommand}"
-                            Content="Xóa kết quả">
-                        </Button>
+                            Content="Xóa kết quả"
+                            Background="#C62828"
+                            Foreground="White"
+                            CornerRadius="8"
+                            Padding="16, 8"
+                            VerticalAlignment="Center"
+                            FontWeight="SemiBold" />
                     </Grid>
                 </Border>
             </Border>
-            
             
             <!-- // Kết quả // -->
             <StackPanel Grid.Row="3" Classes="input-field">
@@ -101,7 +160,6 @@
                          Text="{Binding RemainderString, Mode=OneWay}"
                          PlaceholderText="0" />
             </StackPanel>
-
         </Grid>
     </Border>
 </rxui:ReactiveUserControl>
