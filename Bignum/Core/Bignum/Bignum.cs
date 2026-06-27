@@ -13,6 +13,7 @@ public class Bignum
     public BignumNode? Head { get; private set; }
     public BignumNode? Tail { get; private set; }
     public int NodeCount { get; private set; }
+    public int DigitCount { get; private set; } = 1;
 
     public Bignum(int value) : this((long)value)
     {
@@ -313,6 +314,19 @@ public class Bignum
         return count;
     }
 
+    private int CalculateDigitCount()
+    {
+        if (Head is null || Tail is null) return 1;
+
+        var mostSignificantNodeValue = Tail.Value;
+        var tailDigitCount = 1;
+        if (mostSignificantNodeValue >= 1000) tailDigitCount = 4;
+        else if (mostSignificantNodeValue >= 100) tailDigitCount = 3;
+        else if (mostSignificantNodeValue >= 10) tailDigitCount = 2;
+
+        return ((NodeCount - 1) * BignumConstants.NodeDigitCount) + tailDigitCount;
+    }
+
     private void InitTail()
     {
         var current = Head;
@@ -322,5 +336,6 @@ public class Bignum
         }
 
         this.Tail = current;
+        this.DigitCount = CalculateDigitCount();
     }
 }

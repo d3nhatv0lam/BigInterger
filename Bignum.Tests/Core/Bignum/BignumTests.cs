@@ -153,4 +153,26 @@ public class BignumTests
     }
 
     #endregion
+
+    #region DigitCount Tests
+
+    [Theory]
+    [InlineData("0", 1)]
+    [InlineData("9", 1)]
+    [InlineData("10", 2)]
+    [InlineData("99", 2)]
+    [InlineData("100", 3)]
+    [InlineData("999", 3)]
+    [InlineData("1000", 4)]
+    [InlineData("9999", 4)]
+    [InlineData("10000", 5)]
+    [InlineData("-1234567890", 10)]
+    [InlineData("123456789012345678901234567890", 30)]
+    public void DigitCount_ShouldReturnCorrectCount(string input, int expectedCount)
+    {
+        var b = new BignumClass(input);
+        Assert.Equal(expectedCount, b.DigitCount);
+    }
+
+    #endregion
 }

@@ -42,6 +42,9 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
     [Reactive] private OperationType? _selectedOperation = OperationType.Add;
     [Reactive] private string? _calculationError;
 
+    [ObservableAsProperty] private string _numberADigitCountDisplay = "Số chữ số: 0";
+    [ObservableAsProperty] private string _numberBDigitCountDisplay = "Số chữ số: 0";
+
     [ObservableAsProperty] private bool _isAddActive;
     [ObservableAsProperty] private bool _isSubtractActive;
     [ObservableAsProperty] private bool _isMultiplyActive;
@@ -64,20 +67,20 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
 
         this.ValidationRule(
             vm => vm.NumberA,
-            str => !string.IsNullOrWhiteSpace(str) && CoreBignum.Bignum.IsValid(str, out _),
+            str => string.IsNullOrEmpty(str) || CoreBignum.Bignum.IsValid(str, out _),
             str =>
             {
-                if (string.IsNullOrWhiteSpace(str)) return "Số A không được để trống";
+                if (string.IsNullOrEmpty(str)) return string.Empty;
                 CoreBignum.Bignum.IsValid(str, out var error);
                 return error ?? "Định dạng không hợp lệ";
             });
 
         this.ValidationRule(
             vm => vm.NumberB,
-            str => !string.IsNullOrWhiteSpace(str) && CoreBignum.Bignum.IsValid(str, out _),
+            str => string.IsNullOrEmpty(str) || CoreBignum.Bignum.IsValid(str, out _),
             str =>
             {
-                if (string.IsNullOrWhiteSpace(str)) return "Số B không được để trống";
+                if (string.IsNullOrEmpty(str)) return string.Empty;
                 CoreBignum.Bignum.IsValid(str, out var error);
                 return error ?? "Định dạng không hợp lệ";
             });
@@ -100,6 +103,16 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
         _isDivideActiveHelper = this.WhenAnyValue(x => x.SelectedOperation)
             .Select(op => op == OperationType.Divide)
             .ToProperty(this, nameof(IsDivideActive))
+            .DisposeWith(_disposables);
+
+        _numberADigitCountDisplayHelper = this.WhenAnyValue(x => x.NumberA)
+            .Select(GetDigitCountDisplay)
+            .ToProperty(this, nameof(NumberADigitCountDisplay))
+            .DisposeWith(_disposables);
+
+        _numberBDigitCountDisplayHelper = this.WhenAnyValue(x => x.NumberB)
+            .Select(GetDigitCountDisplay)
+            .ToProperty(this, nameof(NumberBDigitCountDisplay))
             .DisposeWith(_disposables);
 
         // 6. Parsers
@@ -287,6 +300,24 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
                 }
             })
             .DisposeWith(_disposables);
+    }
+
+    private static string GetDigitCountDisplay(string? input)
+    {
+        if (string.IsNullOrEmpty(input)) 
+        {
+            return "Số chữ số: 0";
+        }
+        
+        try
+        {
+            var temp = new CoreBignum.Bignum(input);
+            return $"Số chữ số: {temp.DigitCount}";
+        }
+        catch
+        {
+            return "Số chữ số: --";
+        }
     }
 
     public void Dispose()

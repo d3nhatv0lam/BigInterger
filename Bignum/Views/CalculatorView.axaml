@@ -68,11 +68,18 @@
                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
                              PlaceholderText="Nhập số A" />
 
-                    <TextBlock x:Name="NumberAErrorText"
-                               Foreground="#D32F2F"
-                               FontSize="12"
-                               Margin="4,4,0,0"
-                               IsVisible="{Binding ElementName=NumberAErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <Grid ColumnDefinitions="* Auto" Margin="4,4,4,0">
+                        <TextBlock x:Name="NumberAErrorText"
+                                   Grid.Column="0"
+                                   Foreground="#D32F2F"
+                                   FontSize="12"
+                                   IsVisible="{Binding ElementName=NumberAErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding NumberADigitCountDisplay}"
+                                   Foreground="#757575"
+                                   FontSize="12"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
                 </StackPanel>
 
                 <!-- // Số B // -->
@@ -96,11 +103,18 @@
                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
                              PlaceholderText="Nhập số B" />
 
-                    <TextBlock x:Name="NumberBErrorText"
-                               Foreground="#D32F2F"
-                               FontSize="12"
-                               Margin="4,4,0,0"
-                               IsVisible="{Binding ElementName=NumberBErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <Grid ColumnDefinitions="* Auto" Margin="4,4,4,0">
+                        <TextBlock x:Name="NumberBErrorText"
+                                   Grid.Column="0"
+                                   Foreground="#D32F2F"
+                                   FontSize="12"
+                                   IsVisible="{Binding ElementName=NumberBErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding NumberBDigitCountDisplay}"
+                                   Foreground="#757575"
+                                   FontSize="12"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
                 </StackPanel>
 
                 <!-- // phép toán  -->
