@@ -21,7 +21,11 @@ public partial class App : Application
         if (!System.OperatingSystem.IsBrowser())
         {
             Locator.CurrentMutable.RegisterLazySingleton<IHistoryService>(() => new HistoryService());
+            Locator.CurrentMutable.RegisterLazySingleton<IThemeService>(() => new ThemeService());
         }
+
+        // Áp dụng cấu hình giao diện đã lưu
+        Locator.Current.GetService<IThemeService>()?.ApplyTheme();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

@@ -7,6 +7,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     xmlns:vm="using:Bignum.ViewModels"
     xmlns:view="clr-namespace:Bignum.Views"
+    xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     x:CompileBindings="True"
     Focusable="True"
     Background="Transparent"
@@ -16,29 +17,43 @@
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
-to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+ to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TabControl>
-        <TabControl.Styles>
-            <Style Selector="Panel#PART_TabsPanel">
-                <Setter Property="HorizontalAlignment" Value="Left" />
-                <Setter Property="Margin" Value="24 0 0 0"></Setter>
-            </Style>
+    <Panel>
+        <TabControl>
+            <TabControl.Styles>
+                <Style Selector="Panel#PART_TabsPanel">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="Margin" Value="24 0 0 0"></Setter>
+                </Style>
+                
+                <Style Selector="TabControl TabItem">
+                    <Setter Property="MinWidth" Value="150"></Setter>
+                </Style>
+            </TabControl.Styles>
             
-            <Style Selector="TabControl TabItem">
-                <Setter Property="MinWidth" Value="150"></Setter>
-            </Style>
-        </TabControl.Styles>
-        
-        <TabControl.Items>
-            <TabItem Header="Tính toán">
-                <view:CalculatorView DataContext="{Binding Calculator}"/>
-            </TabItem>
-            <TabItem Header="Lịch sử tính toán">
-                <view:HistoryView DataContext="{Binding History}"/>
-            </TabItem>
-        </TabControl.Items>
-    </TabControl>
+            <TabControl.Items>
+                <TabItem Header="Tính toán">
+                    <view:CalculatorView DataContext="{Binding Calculator}"/>
+                </TabItem>
+                <TabItem Header="Lịch sử tính toán">
+                    <view:HistoryView DataContext="{Binding History}"/>
+                </TabItem>
+            </TabControl.Items>
+        </TabControl>
+
+        <!-- Button chuyển chế độ sáng/tối -->
+        <Button Command="{Binding ToggleThemeCommand}"
+                Classes="flat"
+                Width="40" Height="40"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,6,16,0"
+                ZIndex="10"
+                ToolTip.Tip="Chuyển đổi giao diện Sáng/Tối">
+            <icons:MaterialIcon Kind="{Binding CurrentThemeIcon}" Width="20" Height="20" Foreground="#757575" />
+        </Button>
+    </Panel>
 </rxui:ReactiveUserControl>

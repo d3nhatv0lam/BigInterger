@@ -22,5 +22,6 @@ internal sealed partial class Program
             .AfterSetup(builder =>
             {
                 Splat.Locator.CurrentMutable.RegisterLazySingleton<IHistoryService>(() => new WebHistoryService());
+                Splat.Locator.CurrentMutable.RegisterLazySingleton<IThemeService>(() => new WebThemeService());
             });
 }

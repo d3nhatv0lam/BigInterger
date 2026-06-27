@@ -1,61 +1,72 @@
-<rxui:ReactiveUserControl x:TypeArguments="vm:HistoryViewModel" 
-                           xmlns="https://github.com/avaloniaui"
-                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-                           xmlns:vm="clr-namespace:Bignum.ViewModels"
-                           xmlns:services="clr-namespace:Bignum.Services"
-                           x:DataType="vm:HistoryViewModel"
-                           x:CompileBindings="True"
-                           xmlns:rxui="http://reactiveui.net"
-                           x:Class="Bignum.Views.HistoryView">
+<rxui:ReactiveUserControl x:TypeArguments="vm:HistoryViewModel"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+                          xmlns:vm="clr-namespace:Bignum.ViewModels"
+                          xmlns:services="clr-namespace:Bignum.Services"
+                          x:DataType="vm:HistoryViewModel"
+                          x:CompileBindings="True"
+                          xmlns:rxui="http://reactiveui.net"
+                          x:Class="Bignum.Views.HistoryView">
 
     <Panel>
         <!-- Giao diện chính -->
-        <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer x:Name="PageScrollViewer" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
             <Border Padding="16">
                 <Grid RowDefinitions="Auto Auto Auto Auto">
                     <!-- Tiêu đề và nút tác vụ -->
                     <Grid Grid.Row="0" ColumnDefinitions="* Auto Auto" Margin="0,0,0,16">
-                        <TextBlock Grid.Column="0" Text="Lịch sử các phép toán đã thực hiện" 
-                                   VerticalAlignment="Center" 
-                                   FontWeight="Bold" 
+                        <TextBlock Grid.Column="0" Text="Lịch sử các phép toán đã thực hiện"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Bold"
                                    FontSize="16" />
-                        
-                        <Button Grid.Column="1" Content="Làm mới" 
+
+                        <Button Grid.Column="1" Content="Làm mới"
                                 Command="{Binding LoadHistoryCommand}"
-                                Background="#2196F3" 
-                                Foreground="White"
-                                CornerRadius="6" 
-                                Padding="16, 8" 
+                                Background="#2196F3"
+                                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                CornerRadius="6"
+                                Padding="16, 8"
                                 Margin="0,0,10,0"
                                 FontWeight="Bold" />
-                        
-                        <Button Grid.Column="2" Content="Xóa tất cả" 
+
+                        <Button Grid.Column="2" Content="Xóa tất cả"
                                 Command="{Binding ClearAllCommand}"
-                                Background="#C62828" 
-                                Foreground="White"
-                                CornerRadius="6" 
+                                Background="#D32F2F"
+                                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                CornerRadius="6"
                                 Padding="16, 8"
                                 FontWeight="Bold" />
                     </Grid>
 
                     <!-- Tiêu đề cột của bảng (Table Header) -->
-                    <Border Grid.Row="1" Background="#EAE2F0" BorderThickness="1" BorderBrush="#D1C4E9" CornerRadius="6,6,0,0" Padding="16, 12">
+                    <Border Grid.Row="1" Background="{DynamicResource MaterialDesignCardBackground}"
+                            BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}"
+                            CornerRadius="6,6,0,0" Padding="16, 12">
                         <Grid ColumnDefinitions="160 100 * * *">
-                            <TextBlock Grid.Column="0" Text="Thời gian" FontWeight="Bold" Foreground="#4C4452" />
-                            <TextBlock Grid.Column="1" Text="Phép toán" FontWeight="Bold" Foreground="#4C4452" />
-                            <TextBlock Grid.Column="2" Text="Số A" FontWeight="Bold" Foreground="#4C4452" Margin="4,0" />
-                            <TextBlock Grid.Column="3" Text="Số B" FontWeight="Bold" Foreground="#4C4452" Margin="4,0" />
-                            <TextBlock Grid.Column="4" Text="Kết quả" FontWeight="Bold" Foreground="#4C4452" Margin="4,0" />
+                            <TextBlock Grid.Column="0" Text="Thời gian" FontWeight="Bold"
+                                       Foreground="{DynamicResource MaterialDesignBody}" />
+                            <TextBlock Grid.Column="1" Text="Phép toán" FontWeight="Bold"
+                                       Foreground="{DynamicResource MaterialDesignBody}" />
+                            <TextBlock Grid.Column="2" Text="Số A" FontWeight="Bold"
+                                       Foreground="{DynamicResource MaterialDesignBody}" Margin="4,0" />
+                            <TextBlock Grid.Column="3" Text="Số B" FontWeight="Bold"
+                                       Foreground="{DynamicResource MaterialDesignBody}" Margin="4,0" />
+                            <TextBlock Grid.Column="4" Text="Kết quả" FontWeight="Bold"
+                                       Foreground="{DynamicResource MaterialDesignBody}" Margin="4,0" />
                         </Grid>
                     </Border>
 
                     <!-- Danh sách các phép toán (Table Body) -->
-                    <Border Grid.Row="2" BorderThickness="1,0,1,1" BorderBrush="#D1C4E9" Background="White" CornerRadius="0,0,6,6" VerticalAlignment="Top">
+                    <Border Grid.Row="2" BorderThickness="1,0,1,1"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}"
+                            Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="0,0,6,6"
+                            VerticalAlignment="Top">
                         <ListBox x:Name="HistoryListBox"
-                                 ItemsSource="{Binding HistoryEntries}" 
+                                 ItemsSource="{Binding HistoryEntries}"
                                  SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
                                  Background="Transparent"
                                  BorderThickness="0"
@@ -70,21 +81,23 @@
                                 <DataTemplate x:DataType="services:HistoryEntry">
                                     <Border Padding="16, 12" Background="Transparent">
                                         <Grid ColumnDefinitions="160 100 * * *">
-                                            <TextBlock Grid.Column="0" Text="{Binding Timestamp}" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Text="{Binding OperationDisplayName}" VerticalAlignment="Center" />
-                                            
+                                            <TextBlock Grid.Column="0" Text="{Binding Timestamp}"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding OperationDisplayName}"
+                                                       VerticalAlignment="Center" />
+
                                             <!-- Rút gọn chuỗi số siêu dài bằng dấu ba chấm -->
-                                            <TextBlock Grid.Column="2" Text="{Binding Operand1}" 
-                                                       TextTrimming="CharacterEllipsis" 
-                                                       VerticalAlignment="Center" 
+                                            <TextBlock Grid.Column="2" Text="{Binding Operand1}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"
                                                        Margin="4,0" />
-                                            <TextBlock Grid.Column="3" Text="{Binding Operand2}" 
-                                                       TextTrimming="CharacterEllipsis" 
-                                                       VerticalAlignment="Center" 
+                                            <TextBlock Grid.Column="3" Text="{Binding Operand2}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"
                                                        Margin="4,0" />
-                                            <TextBlock Grid.Column="4" Text="{Binding Result1}" 
-                                                       TextTrimming="CharacterEllipsis" 
-                                                       VerticalAlignment="Center" 
+                                            <TextBlock Grid.Column="4" Text="{Binding Result1}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"
                                                        Margin="4,0" />
                                         </Grid>
                                     </Border>
@@ -96,51 +109,60 @@
                     <!-- Khung chi tiết phép toán -->
                     <StackPanel Grid.Row="3" Margin="0,16,0,0">
                         <TextBlock Text="Chi tiết phép toán" FontWeight="Bold" FontSize="14" Margin="0,0,0,8" />
-                        
+
                         <!-- Hiển thị khi có dòng được chọn -->
-                        <Border Background="#F5F5F5" BorderThickness="1" BorderBrush="#E0E0E0" CornerRadius="8" Padding="16"
+                        <Border Background="{DynamicResource MaterialDesignCardBackground}" BorderThickness="1"
+                                BorderBrush="{DynamicResource MaterialDesignDivider}" CornerRadius="8" Padding="16"
                                 IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}">
                             <Grid RowDefinitions="Auto Auto Auto Auto Auto" ColumnDefinitions="180 *" RowSpacing="12">
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Thời gian &amp; Phép tính:" FontWeight="Bold" VerticalAlignment="Center" />
-                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedEntryHeader}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Thời gian &amp; Phép tính:"
+                                           FontWeight="Bold" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedEntryHeader}"
+                                           FontWeight="SemiBold" VerticalAlignment="Center" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Số A:" FontWeight="Bold" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="1" Grid.Column="1" 
-                                         Text="{Binding SelectedEntry.Operand1, Mode=OneWay}" 
-                                         IsReadOnly="True" 
-                                         Theme="{StaticResource OutlineTextBox}" 
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Số A:" FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         Text="{Binding SelectedEntry.Operand1, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         Theme="{StaticResource OutlineTextBox}"
                                          TextWrapping="Wrap" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Số B:" FontWeight="Bold" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="2" Grid.Column="1" 
-                                         Text="{Binding SelectedEntry.Operand2, Mode=OneWay}" 
-                                         IsReadOnly="True" 
-                                         Theme="{StaticResource OutlineTextBox}" 
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Số B:" FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Row="2" Grid.Column="1"
+                                         Text="{Binding SelectedEntry.Operand2, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         Theme="{StaticResource OutlineTextBox}"
                                          TextWrapping="Wrap" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Kết quả:" FontWeight="Bold" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="3" Grid.Column="1" 
-                                         Text="{Binding SelectedEntry.Result1, Mode=OneWay}" 
-                                         IsReadOnly="True" 
-                                         Theme="{StaticResource OutlineTextBox}" 
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Kết quả:" FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Row="3" Grid.Column="1"
+                                         Text="{Binding SelectedEntry.Result1, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         Theme="{StaticResource OutlineTextBox}"
                                          TextWrapping="Wrap" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Số dư:" FontWeight="Bold" VerticalAlignment="Center" />
-                                <TextBox Grid.Row="4" Grid.Column="1" 
-                                         Text="{Binding SelectedEntry.Result2, Mode=OneWay}" 
-                                         IsReadOnly="True" 
-                                         Theme="{StaticResource OutlineTextBox}" 
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Số dư:" FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Row="4" Grid.Column="1"
+                                         Text="{Binding SelectedEntry.Result2, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         Theme="{StaticResource OutlineTextBox}"
                                          TextWrapping="Wrap" />
                             </Grid>
                         </Border>
 
                         <!-- Hiển thị khi chưa chọn dòng nào -->
-                        <Border Background="#FAFAFA" BorderThickness="1" BorderBrush="#E0E0E0" CornerRadius="8" Padding="24"
+                        <Border Background="{DynamicResource MaterialDesignCardBackground}" BorderThickness="1"
+                                BorderBrush="{DynamicResource MaterialDesignDivider}" CornerRadius="8" Padding="24"
                                 IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNull}}">
-                            <TextBlock Text="Chọn một phép tính ở bảng trên để xem chi tiết đầy đủ của các số nguyên lớn tại đây." 
-                                       HorizontalAlignment="Center" 
-                                       Foreground="#757575" 
-                                       FontStyle="Italic" />
+                            <TextBlock
+                                Text="Chọn một phép tính ở bảng trên để xem chi tiết đầy đủ của các số nguyên lớn tại đây."
+                                HorizontalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignSecondaryTextBrush}"
+                                FontStyle="Italic" />
                         </Border>
                     </StackPanel>
                 </Grid>
@@ -149,32 +171,37 @@
 
         <!-- Overlay Modal Xác nhận xóa -->
         <Panel Background="#A0000000" IsVisible="{Binding IsConfirmDeleteVisible}">
-            <Border Background="White" CornerRadius="8" Padding="24" Width="420"
+            <Border Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="24"
+                    Width="420"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     BoxShadow="0 4 20 0 #40000000">
                 <StackPanel Spacing="16">
-                    <TextBlock Text="Xác nhận xóa lịch sử" FontWeight="Bold" FontSize="18" Foreground="#C62828" />
-                    
-                    <TextBlock Text="Bạn có chắc chắn muốn xóa toàn bộ lịch sử các phép tính đã thực hiện không? Hành động này sẽ xóa file lưu trữ vĩnh viễn và không thể khôi phục lại." 
-                               TextWrapping="Wrap" 
-                               FontSize="14" 
-                               LineHeight="20" />
-                    
+                    <TextBlock Text="Xác nhận xóa lịch sử" FontWeight="Bold" FontSize="18"
+                               Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" />
+
+                    <TextBlock
+                        Text="Bạn có chắc chắn muốn xóa toàn bộ lịch sử các phép tính đã thực hiện không? Hành động này sẽ xóa file lưu trữ vĩnh viễn và không thể khôi phục lại."
+                        TextWrapping="Wrap"
+                        FontSize="14"
+                        LineHeight="20" />
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,8,0,0">
-                        <Button Content="Hủy bỏ" 
+                        <Button Content="Hủy bỏ"
                                 Command="{Binding CancelDeleteCommand}"
-                                Background="#E0E0E0" 
-                                Foreground="#333333" 
-                                CornerRadius="4" 
-                                Padding="16, 8" 
+                                Background="Transparent"
+                                BorderThickness="1"
+                                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                CornerRadius="4"
+                                Padding="16, 8"
                                 FontWeight="SemiBold" />
-                        
-                        <Button Content="Đồng ý xóa" 
+
+                        <Button Content="Đồng ý xóa"
                                 Command="{Binding ConfirmDeleteCommand}"
-                                Background="#C62828" 
-                                Foreground="White" 
-                                CornerRadius="4" 
-                                Padding="16, 8" 
+                                Background="{DynamicResource MaterialDesignValidationErrorBrush}"
+                                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                CornerRadius="4"
+                                Padding="16, 8"
                                 FontWeight="SemiBold" />
                     </StackPanel>
                 </StackPanel>
