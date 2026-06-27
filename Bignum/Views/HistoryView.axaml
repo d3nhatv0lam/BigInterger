@@ -34,9 +34,8 @@
                                 FontWeight="Bold" />
 
                         <Button Grid.Column="2" Content="Xóa tất cả"
+                                Classes="error-btn"
                                 Command="{Binding ClearAllCommand}"
-                                Background="#D32F2F"
-                                Foreground="{DynamicResource MaterialPrimaryMidForegroundBrush}"
                                 CornerRadius="6"
                                 Padding="16, 8"
                                 FontWeight="Bold" />
@@ -197,9 +196,8 @@
                                 FontWeight="SemiBold" />
 
                         <Button Content="Đồng ý xóa"
+                                Classes="error-btn"
                                 Command="{Binding ConfirmDeleteCommand}"
-                                Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                                Foreground="{DynamicResource MaterialPrimaryMidForegroundBrush}"
                                 CornerRadius="4"
                                 Padding="16, 8"
                                 FontWeight="SemiBold" />

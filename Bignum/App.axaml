@@ -6,9 +6,43 @@
              RequestedThemeVariant="Default">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="SystemControlErrorTextForeground">#C62828</Color>
+                    <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush">#C62828</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
         <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Purple" SecondaryColor="Lime" />
         <materialIcons:MaterialIconStyles />
+
+        <!-- ghi đè màu cứng màu đỏ cho các nút xóa (Light/Dark) -->
+        <Style Selector="Button.error-btn">
+            <Setter Property="Background" Value="#C62828" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.error-btn /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#C62828" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.error-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#B71C1C" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.error-btn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#7F0000" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
     </Application.Styles>
 </Application>
