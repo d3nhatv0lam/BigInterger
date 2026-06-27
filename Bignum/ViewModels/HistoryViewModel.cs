@@ -69,11 +69,10 @@ public partial class HistoryViewModel : ViewModelBase, IDisposable, IActivatable
         
         this.WhenActivated((CompositeDisposable disposables) =>
         {
-            LoadHistoryCommand.Execute(Unit.Default);
+            Observable.Return(Unit.Default)
+                .InvokeCommand(LoadHistoryCommand)
+                .DisposeWith(disposables);
         });
-
-        // Nạp lịch sử lần đầu tiên khi ứng dụng khởi chạy
-        LoadHistory();
     }
 
     private void LoadHistory()
