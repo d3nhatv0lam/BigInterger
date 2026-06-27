@@ -42,20 +42,20 @@
                     </Grid>
 
                     <!-- Tiêu đề cột của bảng (Table Header) -->
-                    <Border Grid.Row="1" Background="{DynamicResource MaterialCardBackgroundBrush}"
-                            BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}"
+                    <Border Grid.Row="1" Background="{DynamicResource HistoryHeaderBackground}"
+                            BorderThickness="1" BorderBrush="{DynamicResource HistoryHeaderBorder}"
                             CornerRadius="6,6,0,0" Padding="16, 12">
                         <Grid ColumnDefinitions="160 100 * * *">
                             <TextBlock Grid.Column="0" Text="Thời gian" FontWeight="Bold"
-                                       Foreground="{DynamicResource MaterialBodyBrush}" />
+                                       Foreground="{DynamicResource HistoryHeaderForeground}" />
                             <TextBlock Grid.Column="1" Text="Phép toán" FontWeight="Bold"
-                                       Foreground="{DynamicResource MaterialBodyBrush}" />
+                                       Foreground="{DynamicResource HistoryHeaderForeground}" />
                             <TextBlock Grid.Column="2" Text="Số A" FontWeight="Bold"
-                                       Foreground="{DynamicResource MaterialBodyBrush}" Margin="4,0" />
+                                       Foreground="{DynamicResource HistoryHeaderForeground}" Margin="4,0" />
                             <TextBlock Grid.Column="3" Text="Số B" FontWeight="Bold"
-                                       Foreground="{DynamicResource MaterialBodyBrush}" Margin="4,0" />
+                                       Foreground="{DynamicResource HistoryHeaderForeground}" Margin="4,0" />
                             <TextBlock Grid.Column="4" Text="Kết quả" FontWeight="Bold"
-                                       Foreground="{DynamicResource MaterialBodyBrush}" Margin="4,0" />
+                                       Foreground="{DynamicResource HistoryHeaderForeground}" Margin="4,0" />
                         </Grid>
                     </Border>
 

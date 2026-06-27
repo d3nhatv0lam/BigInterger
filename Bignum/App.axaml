@@ -10,12 +10,17 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-
+                    <SolidColorBrush x:Key="HistoryHeaderBackground">#EAE2F0</SolidColorBrush>
+                    <SolidColorBrush x:Key="HistoryHeaderForeground">#4C4452</SolidColorBrush>
+                    <SolidColorBrush x:Key="HistoryHeaderBorder">#D1C4E9</SolidColorBrush>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
                     <Color x:Key="SystemControlErrorTextForeground">#C62828</Color>
                     <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush">#C62828</SolidColorBrush>
+                    <SolidColorBrush x:Key="HistoryHeaderBackground">#2E2735</SolidColorBrush>
+                    <SolidColorBrush x:Key="HistoryHeaderForeground">#E1D5EC</SolidColorBrush>
+                    <SolidColorBrush x:Key="HistoryHeaderBorder">#4A3F54</SolidColorBrush>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
