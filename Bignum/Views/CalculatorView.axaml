@@ -76,7 +76,7 @@
                                    IsVisible="{Binding ElementName=NumberAErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding NumberADigitCountDisplay}"
-                                   Foreground="{DynamicResource MaterialDesignSecondaryTextBrush}"
+                                   Foreground="{DynamicResource MaterialBodyLightBrush}"
                                    FontSize="12"
                                    HorizontalAlignment="Right" />
                     </Grid>
@@ -111,14 +111,14 @@
                                    IsVisible="{Binding ElementName=NumberBErrorText, Path=Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding NumberBDigitCountDisplay}"
-                                   Foreground="{DynamicResource MaterialDesignSecondaryTextBrush}"
+                                   Foreground="{DynamicResource MaterialBodyLightBrush}"
                                    FontSize="12"
                                    HorizontalAlignment="Right" />
                     </Grid>
                 </StackPanel>
 
                 <!-- // phép toán  -->
-                <Border BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}" Grid.Row="2" CornerRadius="10">
+                <Border BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}" Grid.Row="2" CornerRadius="10">
                     <Border Padding="10">
                         <Panel>
                             <!-- // desktop // -->
@@ -137,14 +137,14 @@
                                             <Setter Property="Margin" Value="0" />
                                             <Setter Property="FontSize" Value="13" />
                                             <Setter Property="Background" Value="Transparent" />
-                                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
                                             <Setter Property="BorderThickness" Value="1" />
                                             <Setter Property="FontWeight" Value="SemiBold" />
                                         </Style>
                                         <Style Selector="Button.op-btn[Tag=True]">
-                                            <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource MaterialPrimaryMidBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource MaterialPrimaryMidForegroundBrush}" />
                                         </Style>
                                     </StackPanel.Styles>
 
@@ -174,7 +174,7 @@
                                     Command="{Binding ClearResultCommand}"
                                     Content="Xóa kết quả"
                                     Background="#C62828"
-                                    Foreground="White"
+                                    Foreground="{DynamicResource MaterialPrimaryMidForegroundBrush}"
                                     CornerRadius="8"
                                     Padding="16, 8"
                                     VerticalAlignment="Center"
@@ -193,16 +193,16 @@
                                             <Setter Property="Margin" Value="4" />
                                             <Setter Property="FontSize" Value="14" />
                                             <Setter Property="Background" Value="Transparent" />
-                                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
                                             <Setter Property="BorderThickness" Value="1" />
                                             <Setter Property="FontWeight" Value="SemiBold" />
                                             <Setter Property="HorizontalAlignment" Value="Stretch" />
                                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                                         </Style>
                                         <Style Selector="Button.op-btn-mob[Tag=True]">
-                                            <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}" />
-                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidForegroundBrush}" />
+                                            <Setter Property="Background" Value="{DynamicResource MaterialPrimaryMidBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource MaterialPrimaryMidForegroundBrush}" />
                                         </Style>
                                     </UniformGrid.Styles>
 
@@ -230,8 +230,8 @@
                                 <Button
                                     Command="{Binding ClearResultCommand}"
                                     Content="Xóa kết quả"
-                                    Background="#C62828"
-                                    Foreground="White"
+                                    Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                                    Foreground="{DynamicResource MaterialPrimaryMidForegroundBrush}"
                                     CornerRadius="8"
                                     Padding="16, 12"
                                     Margin="4,4,4,0"
