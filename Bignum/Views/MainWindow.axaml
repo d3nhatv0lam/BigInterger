@@ -9,6 +9,7 @@
                      x:CompileBindings="True"
                      mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
                      Width="1000" Height="650"
+                     WindowStartupLocation="CenterScreen"
                      x:Class="Bignum.Views.MainWindow"
                      Icon="/Assets/avalonia-logo.ico"
                      x:DataType="vm:MainViewModel"

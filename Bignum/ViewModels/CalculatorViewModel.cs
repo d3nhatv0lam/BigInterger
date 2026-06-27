@@ -8,6 +8,8 @@ using ReactiveUI.SourceGenerators;
 using ReactiveUI.Validation.Abstractions;
 using ReactiveUI.Validation.Contexts;
 using ReactiveUI.Validation.Extensions;
+using Splat;
+using Bignum.Services;
 using CoreBignum = Bignum.Core.Bignum;
 
 namespace Bignum.ViewModels;
@@ -23,6 +25,8 @@ public enum OperationType
 public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel, IValidatableViewModel, IDisposable
 {
     private readonly CompositeDisposable _disposables = new();
+    private readonly IHistoryService _historyService;
+    private string? _lastSavedKey;
 
     [Reactive] private string _numberA = string.Empty;
     [Reactive] private string _numberB = string.Empty;
@@ -55,6 +59,9 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
 
     public CalculatorViewModel()
     {
+        _historyService = Locator.Current.GetService<IHistoryService>()
+            ?? throw new InvalidOperationException("Chưa đăng ký IHistoryService");
+
         this.ValidationRule(
             vm => vm.NumberA,
             str => !string.IsNullOrWhiteSpace(str) && CoreBignum.Bignum.IsValid(str, out _),
@@ -138,38 +145,43 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
             .Select(state =>
             {
                 var (a, b, op) = state;
-                if (a is null || b is null)
-                {
-                    return (Result: null, Remainder: null, Error: null);
-                }
+                CoreBignum.Bignum? result = null;
+                CoreBignum.Bignum? remainder = null;
+                string? error = null;
 
-                try
+                if (a is not null && b is not null)
                 {
-                    switch (op)
+                    try
                     {
-                        case OperationType.Add:
-                            return (Result: a + b, Remainder: null, Error: null);
-                        case OperationType.Subtract:
-                            return (Result: a - b, Remainder: null, Error: null);
-                        case OperationType.Multiply:
-                            return (Result: a * b, Remainder: null, Error: null);
-                        case OperationType.Divide:
-                            var (quot, rem) = CoreBignum.Bignum.Divide(a, b);
-                            return (Result: quot, Remainder: rem, Error: null);
-                        default:
-                            return (Result: null, Remainder: null, Error: null);
+                        switch (op)
+                        {
+                            case OperationType.Add:
+                                result = a + b;
+                                break;
+                            case OperationType.Subtract:
+                                result = a - b;
+                                break;
+                            case OperationType.Multiply:
+                                result = a * b;
+                                break;
+                            case OperationType.Divide:
+                                var (quot, rem) = CoreBignum.Bignum.Divide(a, b);
+                                result = quot;
+                                remainder = rem;
+                                break;
+                        }
+                    }
+                    catch (DivideByZeroException)
+                    {
+                        error = "Lỗi: Không thể chia cho 0";
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Lỗi: {ex.Message}";
                     }
                 }
-                catch (DivideByZeroException)
-                {
-                    return (Result: null, Remainder: null,
-                        Error: "Lỗi: Không thể chia cho 0");
-                }
-                catch (Exception ex)
-                {
-                    return (Result: (CoreBignum.Bignum?)null, Remainder: (CoreBignum.Bignum?)null,
-                        Error: $"Lỗi: {ex.Message}");
-                }
+
+                return (Result: result, Remainder: remainder, Error: error);
             })
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(res =>
@@ -220,6 +232,61 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
                 .DistinctUntilChanged()
                 .ToProperty(this, nameof(RemainderString), scheduler: RxSchedulers.MainThreadScheduler)
                 .DisposeWith(_disposables);
+
+        // Tự động lưu lịch sử khi phép tính thành công và ổn định sau 1 giây (để tránh lưu khi đang gõ số)
+        this.WhenAnyValue(
+                x => x.ResultBignum,
+                x => x.RemainderBignum,
+                x => x.CalculationError)
+            .Throttle(TimeSpan.FromSeconds(1.0), RxSchedulers.TaskpoolScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(state =>
+            {
+                var (res, rem, err) = state;
+                if (res == null)
+                {
+                    _lastSavedKey = null;
+                    return;
+                }
+
+                if (err == null && CachedA != null && CachedB != null && SelectedOperation != null)
+                {
+                    string opName = SelectedOperation switch
+                    {
+                        OperationType.Add => "Addition",
+                        OperationType.Subtract => "Subtraction",
+                        OperationType.Multiply => "Multiply",
+                        OperationType.Divide => "Division",
+                        _ => string.Empty
+                    };
+
+                    if (!string.IsNullOrEmpty(opName))
+                    {
+                        string op1 = CachedA.ToStringNumber();
+                        string op2 = CachedB.ToStringNumber();
+                        string key = $"{opName}:{op1}:{op2}";
+
+                        if (key != _lastSavedKey)
+                        {
+                            _lastSavedKey = key;
+
+                            var entry = new HistoryEntry
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                                Operation = opName,
+                                Operand1 = op1,
+                                Operand2 = op2,
+                                Result1 = res.ToStringNumber(),
+                                Result2 = rem?.ToStringNumber()
+                            };
+
+                            _historyService.AddEntry(entry);
+                        }
+                    }
+                }
+            })
+            .DisposeWith(_disposables);
     }
 
     public void Dispose()

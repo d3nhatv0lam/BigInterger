@@ -1,9 +1,11 @@
-﻿using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
+using Bignum.Services;
 using ReactiveUI.Avalonia;
-using Bignum;
+
+namespace Bignum.Browser;
+
 
 internal sealed partial class Program
 {
@@ -16,5 +18,9 @@ internal sealed partial class Program
         .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>();
+        => AppBuilder.Configure<App>()
+            .AfterSetup(builder =>
+            {
+                Splat.Locator.CurrentMutable.RegisterLazySingleton<IHistoryService>(() => new WebHistoryService());
+            });
 }

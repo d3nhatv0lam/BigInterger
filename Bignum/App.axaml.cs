@@ -3,6 +3,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Bignum.ViewModels;
 using Bignum.Views;
+using Splat;
+using Bignum.Services;
 
 namespace Bignum;
 
@@ -15,6 +17,12 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // Đăng ký dịch vụ lịch sử tính toán nếu không phải chạy trên trình duyệt (WebAssembly)
+        if (!System.OperatingSystem.IsBrowser())
+        {
+            Locator.CurrentMutable.RegisterLazySingleton<IHistoryService>(() => new HistoryService());
+        }
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow

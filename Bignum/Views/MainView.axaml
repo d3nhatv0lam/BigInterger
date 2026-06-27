@@ -37,7 +37,7 @@ to set the actual DataContext for runtime, set the DataContext property in code 
                 <view:CalculatorView DataContext="{Binding Calculator}"/>
             </TabItem>
             <TabItem Header="Lịch sử tính toán">
-                <view:HistoryView></view:HistoryView>
+                <view:HistoryView DataContext="{Binding History}"/>
             </TabItem>
         </TabControl.Items>
     </TabControl>
