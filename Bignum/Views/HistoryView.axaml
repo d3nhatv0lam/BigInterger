@@ -159,6 +159,7 @@
                                 IsVisible="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNull}}">
                             <TextBlock
                                 Text="Chọn một phép tính ở bảng trên để xem chi tiết đầy đủ của các số nguyên lớn tại đây."
+                                TextWrapping="WrapWithOverflow"
                                 HorizontalAlignment="Center"
                                 Foreground="{DynamicResource MaterialBodyLightBrush}"
                                 FontStyle="Italic" />

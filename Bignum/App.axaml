@@ -29,7 +29,7 @@
 
     <Application.Styles>
         <FluentTheme />
-        <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Purple" SecondaryColor="Lime" />
+        <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Purple" SecondaryColor="Blue" />
         <materialIcons:MaterialIconStyles />
 
         <!-- ghi đè màu cứng màu đỏ cho các nút xóa (Light/Dark) -->

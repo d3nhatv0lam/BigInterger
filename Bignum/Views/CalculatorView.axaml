@@ -59,7 +59,8 @@
                                 Command="{Binding ClearNumberACommand}"
                                 Classes="flat" Padding="4" Background="Transparent" BorderThickness="0" Width="32"
                                 Height="32">
-                            <icons:MaterialIcon Kind="Close" Width="18" Height="18" Foreground="Black" />
+                            <icons:MaterialIcon Kind="Close" Width="18" Height="18"
+                                                Foreground="{DynamicResource MaterialBodyLightBrush}" />
                         </Button>
                     </Grid>
 
@@ -69,7 +70,7 @@
                              Theme="{StaticResource OutlineTextBox}"
                              Text="{Binding NumberA, Mode=TwoWay}"
                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             PlaceholderText="Nhập số A" />
+                             PlaceholderText="{Binding InputMaxLength, StringFormat={}Nhập số A (tối đa {0} chữ số)}" />
 
                     <Grid ColumnDefinitions="* Auto" Margin="4,4,4,0">
                         <TextBlock x:Name="NumberAErrorText"
@@ -97,7 +98,7 @@
                                 Command="{Binding ClearNumberBCommand}"
                                 Classes="flat" Padding="4" Background="Transparent" BorderThickness="0" Width="32"
                                 Height="32">
-                            <icons:MaterialIcon Kind="Close" Width="18" Height="18" Foreground="Black" />
+                            <icons:MaterialIcon Kind="Close" Width="18" Height="18"  Foreground="{DynamicResource MaterialBodyLightBrush}" />
                         </Button>
                     </Grid>
 
@@ -107,7 +108,8 @@
                              Theme="{StaticResource OutlineTextBox}"
                              Text="{Binding NumberB, Mode=TwoWay}"
                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             PlaceholderText="Nhập số B" />
+                             PlaceholderText="{Binding InputMaxLength, StringFormat={}Nhập số B (tối đa {0} chữ số)}" />
+
 
                     <Grid ColumnDefinitions="* Auto" Margin="4,4,4,0">
                         <TextBlock x:Name="NumberBErrorText"
