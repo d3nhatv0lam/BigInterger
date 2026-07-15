@@ -41,6 +41,9 @@
                 <TabItem Header="Lịch sử tính toán">
                     <view:HistoryView DataContext="{Binding History}"/>
                 </TabItem>
+                <TabItem Header="Trực quan &amp; Mô phỏng">
+                    <view:VisualizerView DataContext="{Binding Visualizer}"/>
+                </TabItem>
             </TabControl.Items>
         </TabControl>
 
