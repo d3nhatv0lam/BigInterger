@@ -26,6 +26,9 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
 {
     private readonly CompositeDisposable _disposables = new();
     private readonly IHistoryService _historyService;
+    /// <summary>
+    /// Key để nhận biết để đưa vào json
+    /// </summary>
     private string? _lastSavedKey;
 
     [Reactive] private string _numberA = string.Empty;
@@ -39,7 +42,7 @@ public partial class CalculatorViewModel : ViewModelBase, IActivatableViewModel,
     [Reactive] private CoreBignum.Bignum? _resultBignum;
     [Reactive] private CoreBignum.Bignum? _remainderBignum;
 
-    [Reactive] private OperationType? _selectedOperation = OperationType.Add;
+    [Reactive] private OperationType? _selectedOperation;
     [Reactive] private string? _calculationError;
 
     [ObservableAsProperty] private string _numberADigitCountDisplay = "Số chữ số: 0";
