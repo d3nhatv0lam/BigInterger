@@ -1,0 +1,399 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Bignum.ViewModels"
+             xmlns:local="clr-namespace:Bignum.Views"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:DataType="vm:VisualizerViewModel"
+             x:CompileBindings="True"
+             x:Class="Bignum.Views.VisualizerView">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ActiveABackground">#7E57C2</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveAForeground">#FFFFFF</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveResultBackground">#2196F3</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveResultForeground">#FFFFFF</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ActiveABackground">#B388FF</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveAForeground">#121212</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveResultBackground">#80D8FF</SolidColorBrush>
+                    <SolidColorBrush x:Key="ActiveResultForeground">#121212</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Border Padding="16" Background="Transparent">
+            <Grid RowDefinitions="Auto Auto Auto Auto" RowSpacing="20">
+                <!-- Panel -->
+                <Border Grid.Row="0" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}" CornerRadius="10" Padding="16">
+                    <Grid RowDefinitions="Auto Auto" RowSpacing="12">
+                        <!-- Nhập Số A, Phép toán, Số B -->
+                        <Grid Grid.Row="0" ColumnDefinitions="* Auto * " ColumnSpacing="12">
+                            <!-- TextBox A -->
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <Label FontWeight="Bold" FontSize="14" Foreground="{DynamicResource MaterialBodyBrush}">Số A</Label>
+                                <TextBox UseFloatingPlaceholder="False"
+                                         MaxLength="24"
+                                         Classes="outline"
+                                         Theme="{StaticResource OutlineTextBox}"
+                                         IsEnabled="{Binding !IsSimulating}"
+                                         Text="{Binding NumberA, Mode=TwoWay}"
+                                         PlaceholderText="Nhập số A (tối đa 24 chữ số)" />
+                                <TextBlock Text="{Binding AError}" Foreground="#D32F2F" FontSize="11" IsVisible="{Binding AError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+
+                            <!-- Phép toán -->
+                            <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Top" Width="80">
+                                <Label FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialBodyBrush}">Phép toán</Label>
+                                <ComboBox SelectedItem="{Binding SelectedOperation}"
+                                          IsEnabled="{Binding !IsSimulating}"
+                                          HorizontalAlignment="Stretch">
+                                    <x:String>+</x:String>
+                                    <x:String>-</x:String>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- TextBox B -->
+                            <StackPanel Grid.Column="2" Spacing="4">
+                                <Label FontWeight="Bold" FontSize="14" Foreground="{DynamicResource MaterialBodyBrush}">Số B</Label>
+                                <TextBox UseFloatingPlaceholder="False"
+                                         MaxLength="24"
+                                         Classes="outline"
+                                         Theme="{StaticResource OutlineTextBox}"
+                                         IsEnabled="{Binding !IsSimulating}"
+                                         Text="{Binding NumberB, Mode=TwoWay}"
+                                         PlaceholderText="Nhập số B (tối đa 24 chữ số)" />
+                                <TextBlock Text="{Binding BError}" Foreground="#D32F2F" FontSize="11" IsVisible="{Binding BError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Các nút điều khiển mô phỏng -->
+                        <Grid Grid.Row="1" ColumnDefinitions="Auto * Auto" VerticalAlignment="Center">
+                            <!-- Nút Bắt đầu / Đặt lại -->
+                            <Panel Grid.Column="0">
+                                <Button Command="{Binding StartSimCommand}"
+                                        Classes="accent"
+                                        IsVisible="{Binding !IsSimulating}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <icons:MaterialIcon Kind="Play" Width="16" Height="16" />
+                                        <TextBlock Text="Bắt đầu mô phỏng" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding ResetCommand}"
+                                        Classes="error-btn"
+                                        IsVisible="{Binding IsSimulating}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <icons:MaterialIcon Kind="Refresh" Width="16" Height="16" />
+                                        <TextBlock Text="Đặt lại" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </Panel>
+
+                            <!-- Nhãn chỉ số bước hiện tại -->
+                            <TextBlock Grid.Column="1"
+                                       IsVisible="{Binding IsSimulating}"
+                                       Text="{Binding CurrentStepIndex, StringFormat='Bước: {0}'}"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource ActiveABackground}" />
+
+                            <!-- Nhóm nút điều hướng -->
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsSimulating}">
+                                <Button Command="{Binding PrevStepCommand}" Classes="outline" Padding="8,4">
+                                    <icons:MaterialIcon Kind="SkipPrevious" Width="18" Height="18" />
+                                </Button>
+                                <Button Command="{Binding ToggleAutoPlayCommand}" Classes="outline" Padding="12,4">
+                                    <Panel>
+                                        <icons:MaterialIcon Kind="PlayPause" Width="18" Height="18" IsVisible="{Binding !IsAutoPlaying}" />
+                                        <icons:MaterialIcon Kind="Pause" Width="18" Height="18" IsVisible="{Binding IsAutoPlaying}" />
+                                    </Panel>
+                                </Button>
+                                <Button Command="{Binding NextStepCommand}" Classes="outline" Padding="8,4">
+                                    <icons:MaterialIcon Kind="SkipNext" Width="18" Height="18" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- 2. VÙNG TRỰC QUAN LIÊN KẾT (VISUAL CANVAS) -->
+                <Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}" CornerRadius="10" Padding="16">
+                    <Grid RowDefinitions="Auto Auto Auto" RowSpacing="24">
+                        <!-- Danh sách Số A -->
+                        <Grid Grid.Row="0" ColumnDefinitions="80, *">
+                            <TextBlock Grid.Column="0" Text="Số A" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource MaterialBodyBrush}" />
+                            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding NodesA}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="vm:VisualNode">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <!-- Node Card -->
+                                                <Border Width="85" Height="65" CornerRadius="8" Margin="4,2" Tag="{Binding IsHighlighted}"
+                                                        Background="{DynamicResource MaterialCardBackgroundBrush}">
+                                                    <Border.Styles>
+                                                        <Style Selector="Border">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
+                                                            <Setter Property="BorderThickness" Value="1.5" />
+                                                            <Setter Property="Background" Value="{DynamicResource MaterialCardBackgroundBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-pointer">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveABackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-value">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-sub">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyLightBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True]">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource ActiveABackground}" />
+                                                            <Setter Property="BorderThickness" Value="3" />
+                                                            <Setter Property="Background" Value="{DynamicResource ActiveABackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True] TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveAForeground}" />
+                                                        </Style>
+                                                    </Border.Styles>
+                                                    <Grid RowDefinitions="Auto * Auto" Margin="4">
+                                                        <!-- Label Head / Tail -->
+                                                        <TextBlock Classes="node-pointer" Grid.Row="0" FontSize="9" HorizontalAlignment="Center" FontWeight="Bold">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding ConverterParameter="Pointer">
+                                                                    <Binding Path="IsHead" />
+                                                                    <Binding Path="IsTail" />
+                                                                    <!-- Trả về chuỗi mô tả -->
+                                                                    <MultiBinding.Converter>
+                                                                        <x:Static Member="local:VisualizerView.PointerTextConverter"/>
+                                                                    </MultiBinding.Converter>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                        <!-- Value -->
+                                                        <TextBlock Classes="node-value" Grid.Row="1" Text="{Binding Value}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <!-- Index -->
+                                                        <TextBlock Classes="node-sub" Grid.Row="2" Text="{Binding Index, StringFormat='Node {0}'}" FontSize="9" HorizontalAlignment="Center" />
+                                                    </Grid>
+                                                </Border>
+                                                <!-- Arrow -->
+                                                <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" IsVisible="{Binding !IsTail}" />
+                                                <!-- Null link at Tail -->
+                                                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsTail}">
+                                                    <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" />
+                                                    <Border Background="#15888888" CornerRadius="4" Padding="6,2" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}">
+                                                        <TextBlock Text="Null" Foreground="{DynamicResource MaterialBodyLightBrush}" FontSize="10" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- Danh sách Số B -->
+                        <Grid Grid.Row="1" ColumnDefinitions="80, *">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <TextBlock Text="Số B" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource MaterialBodyBrush}" />
+                                <TextBlock Text="{Binding SelectedOperation}" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Foreground="{DynamicResource ActiveABackground}" Margin="8,0,0,0" />
+                            </StackPanel>
+                            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding NodesB}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="vm:VisualNode">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <!-- Node Card -->
+                                                <Border Width="85" Height="65" CornerRadius="8" Margin="4,2" Tag="{Binding IsHighlighted}"
+                                                        Background="{DynamicResource MaterialCardBackgroundBrush}">
+                                                    <Border.Styles>
+                                                        <Style Selector="Border">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
+                                                            <Setter Property="BorderThickness" Value="1.5" />
+                                                            <Setter Property="Background" Value="{DynamicResource MaterialCardBackgroundBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-pointer">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveABackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-value">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-sub">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyLightBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True]">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource ActiveABackground}" />
+                                                            <Setter Property="BorderThickness" Value="3" />
+                                                            <Setter Property="Background" Value="{DynamicResource ActiveABackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True] TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveAForeground}" />
+                                                        </Style>
+                                                    </Border.Styles>
+                                                    <Grid RowDefinitions="Auto * Auto" Margin="4">
+                                                        <!-- Label Head / Tail -->
+                                                        <TextBlock Classes="node-pointer" Grid.Row="0" FontSize="9" HorizontalAlignment="Center" FontWeight="Bold">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding>
+                                                                    <Binding Path="IsHead" />
+                                                                    <Binding Path="IsTail" />
+                                                                    <MultiBinding.Converter>
+                                                                        <x:Static Member="local:VisualizerView.PointerTextConverter"/>
+                                                                    </MultiBinding.Converter>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                        <!-- Value -->
+                                                        <TextBlock Classes="node-value" Grid.Row="1" Text="{Binding Value}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <!-- Index -->
+                                                        <TextBlock Classes="node-sub" Grid.Row="2" Text="{Binding Index, StringFormat='Node {0}'}" FontSize="9" HorizontalAlignment="Center" />
+                                                    </Grid>
+                                                </Border>
+                                                <!-- Arrow -->
+                                                <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" IsVisible="{Binding !IsTail}" />
+                                                <!-- Null link at Tail -->
+                                                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsTail}">
+                                                    <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" />
+                                                    <Border Background="#15888888" CornerRadius="4" Padding="6,2" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}">
+                                                        <TextBlock Text="Null" Foreground="{DynamicResource MaterialBodyLightBrush}" FontSize="10" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- Danh sách Kết quả -->
+                        <Grid Grid.Row="2" ColumnDefinitions="80, *">
+                            <TextBlock Grid.Column="0" Text="Kết quả" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" Foreground="{DynamicResource MaterialBodyBrush}" />
+                            <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding NodesResult}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="vm:VisualNode">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <!-- Node Card -->
+                                                <Border Width="85" Height="65" CornerRadius="8" Margin="4,2" Tag="{Binding IsHighlighted}"
+                                                        Background="{DynamicResource MaterialCardBackgroundBrush}">
+                                                    <Border.Styles>
+                                                        <Style Selector="Border">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
+                                                            <Setter Property="BorderThickness" Value="1.5" />
+                                                            <Setter Property="Background" Value="{DynamicResource MaterialCardBackgroundBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-pointer">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveResultBackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-value">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border TextBlock.node-sub">
+                                                            <Setter Property="Foreground" Value="{DynamicResource MaterialBodyLightBrush}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True]">
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource ActiveResultBackground}" />
+                                                            <Setter Property="BorderThickness" Value="3" />
+                                                            <Setter Property="Background" Value="{DynamicResource ActiveResultBackground}" />
+                                                        </Style>
+                                                        <Style Selector="Border[Tag=True] TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource ActiveResultForeground}" />
+                                                        </Style>
+                                                    </Border.Styles>
+                                                    <Grid RowDefinitions="Auto * Auto" Margin="4">
+                                                        <!-- Label Head / Tail -->
+                                                        <TextBlock Classes="node-pointer" Grid.Row="0" FontSize="9" HorizontalAlignment="Center" FontWeight="Bold">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding>
+                                                                    <Binding Path="IsHead" />
+                                                                    <Binding Path="IsTail" />
+                                                                    <MultiBinding.Converter>
+                                                                        <x:Static Member="local:VisualizerView.PointerTextConverter"/>
+                                                                    </MultiBinding.Converter>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                        <!-- Value -->
+                                                        <TextBlock Classes="node-value" Grid.Row="1" Text="{Binding Value}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <!-- Index -->
+                                                        <TextBlock Classes="node-sub" Grid.Row="2" Text="{Binding Index, StringFormat='Node {0}'}" FontSize="9" HorizontalAlignment="Center" />
+                                                    </Grid>
+                                                </Border>
+                                                <!-- Arrow -->
+                                                <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" IsVisible="{Binding !IsTail}" />
+                                                <!-- Null link at Tail -->
+                                                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsTail}">
+                                                    <icons:MaterialIcon Kind="ArrowRight" Width="18" Height="18" Foreground="{DynamicResource MaterialDividerBrush}" />
+                                                    <Border Background="#15888888" CornerRadius="4" Padding="6,2" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}">
+                                                        <TextBlock Text="Null" Foreground="{DynamicResource MaterialBodyLightBrush}" FontSize="10" />
+                                                    </Border>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- 3. VÙNG GIẢI THÍCH CHI TIẾT (INFO & LOG PANEL) -->
+                <Grid Grid.Row="2" ColumnDefinitions="* Auto" ColumnSpacing="20">
+                    <!-- Khung Giải thích bước tính -->
+                    <Border Grid.Column="0" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}" CornerRadius="10" Padding="16" MinHeight="100">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Giải thích giải thuật" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource MaterialPrimaryBrush}" />
+                            <TextBlock Text="{Binding ExplanationText}" TextWrapping="Wrap" FontSize="14" LineHeight="20" Foreground="{DynamicResource MaterialBodyBrush}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Khung số nhớ Carry / Borrow -->
+                    <Border Grid.Column="1" Width="150" BorderThickness="1" BorderBrush="{DynamicResource MaterialDividerBrush}" CornerRadius="10" Padding="16" IsVisible="{Binding CarryText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <Grid RowDefinitions="Auto *">
+                            <TextBlock Grid.Row="0" Text="Nhớ / Mượn" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialBodyLightBrush}" />
+                            <Border Grid.Row="1" Background="{DynamicResource ActiveResultBackground}" CornerRadius="20" Width="90" Height="40" Margin="0,8,0,0">
+                                <TextBlock Text="{Binding CarryText}"
+                                           Foreground="{DynamicResource ActiveResultForeground}"
+                                           FontWeight="Bold"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Chú thích học tập nhỏ phía dưới -->
+                <TextBlock Grid.Row="3"
+                           Text="* Số nguyên lớn được lưu trữ trong bộ nhớ ngược (Node 0 đại diện cho 4 chữ số tận cùng bên phải) để thuận tiện cho việc thực hiện phép tính cộng/trừ có nhớ từ phải sang trái."
+                           FontStyle="Italic"
+                           FontSize="11"
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource MaterialBodyLightBrush}" />
+            </Grid>
+        </Border>
+    </ScrollViewer>
+</UserControl>

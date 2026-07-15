@@ -14,6 +14,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private readonly CompositeDisposable _disposables = new();
     public CalculatorViewModel Calculator { get; } = new();
     public HistoryViewModel History { get; } = new();
+    public VisualizerViewModel Visualizer { get; } = new();
 
     [Reactive] private string _currentThemeIcon = "WeatherNight";
 
@@ -23,6 +24,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     {
         Calculator.DisposeWith(_disposables);
         History.DisposeWith(_disposables);
+        Visualizer.DisposeWith(_disposables);
 
         var themeService = Locator.Current.GetService<IThemeService>()
             ?? throw new InvalidOperationException("Chưa đăng ký IThemeService");
